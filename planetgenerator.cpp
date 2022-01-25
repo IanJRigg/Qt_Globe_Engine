@@ -21,14 +21,14 @@ static void generate_front_face(std::vector<float>& vertices,
                                 std::vector<uint32_t>& indices,
                                 const uint32_t vertices_per_side)
 {
-    float step = 1.0 / (vertices_per_side - 1UL);
-    uint32_t n = (vertices_per_side * vertices_per_side * 3) * FRONT_FACE_START_INDEX;
+    auto step = 1.0f / (vertices_per_side - 1UL);
+    auto n = (vertices_per_side * vertices_per_side * 3U) * FRONT_FACE_START_INDEX;
 
     QVector3D temp;
 
-    for(uint32_t i = 0; i < vertices_per_side; i++)
+    for(auto i = 0U; i < vertices_per_side; i++)
     {
-        for(uint32_t j = 0; j < vertices_per_side; j++)
+        for(auto j = 0U; j < vertices_per_side; j++)
         {
             temp.setX(j * step - 0.5f); // X
             temp.setY(i * step - 0.5f); // Y
@@ -45,11 +45,11 @@ static void generate_front_face(std::vector<float>& vertices,
     }
 
     n = ((vertices_per_side - 1UL)  * (vertices_per_side - 1UL) * 6UL) * FRONT_FACE_START_INDEX;
-    uint32_t offset = vertices_per_side * vertices_per_side * FRONT_FACE_START_INDEX;
+    auto offset = vertices_per_side * vertices_per_side * FRONT_FACE_START_INDEX;
 
-    for(uint32_t i = 0; i < vertices_per_side - 1; ++i)
+    for(auto i = 0U; i < vertices_per_side - 1U; ++i)
     {
-        for(uint32_t j = 0; j < vertices_per_side - 1; ++j)
+        for(auto j = 0U; j < vertices_per_side - 1U; ++j)
         {
             indices.at(n + 0UL) = offset + (i * vertices_per_side) + j;       // X
             indices.at(n + 1UL) = offset + (i * vertices_per_side) + j + 1UL; // Y
@@ -71,14 +71,14 @@ static void generate_back_face(std::vector<float>& vertices,
                                std::vector<uint32_t>& indices,
                                const uint32_t vertices_per_side)
 {
-    float step = 1.0 / (vertices_per_side - 1UL);
-    uint32_t n = (vertices_per_side * vertices_per_side * 3) * BACK_FACE_START_INDEX;
+    auto step = 1.0f / (vertices_per_side - 1UL);
+    auto n = (vertices_per_side * vertices_per_side * 3U) * BACK_FACE_START_INDEX;
 
     QVector3D temp;
 
-    for(uint32_t i = 0; i < vertices_per_side; i++)
+    for(auto i = 0U; i < vertices_per_side; i++)
     {
-        for(uint32_t j = 0; j < vertices_per_side; j++)
+        for(auto j = 0U; j < vertices_per_side; j++)
         {
             temp.setX(1.0f - (j * step) - 0.5f); // X
             temp.setY(i * step - 0.5f); // Y
@@ -95,11 +95,11 @@ static void generate_back_face(std::vector<float>& vertices,
     }
 
     n = ((vertices_per_side - 1UL)  * (vertices_per_side - 1UL) * 6UL) * BACK_FACE_START_INDEX;
-    uint32_t offset = vertices_per_side * vertices_per_side * BACK_FACE_START_INDEX;
+    auto offset = vertices_per_side * vertices_per_side * BACK_FACE_START_INDEX;
 
-    for(uint32_t i = 0; i < vertices_per_side - 1; ++i)
+    for(auto i = 0U; i < vertices_per_side - 1U; ++i)
     {
-        for(uint32_t j = 0; j < vertices_per_side - 1; ++j)
+        for(auto j = 0U; j < vertices_per_side - 1U; ++j)
         {
             indices.at(n + 0UL) = offset + (i * vertices_per_side) + j;       // X
             indices.at(n + 1UL) = offset + (i * vertices_per_side) + j + 1UL; // Y
@@ -121,14 +121,14 @@ static void generate_left_face(std::vector<float>& vertices,
                                std::vector<uint32_t>& indices,
                                const uint32_t vertices_per_side)
 {
-    float step = 1.0 / (vertices_per_side - 1UL);
-    uint32_t n = (vertices_per_side * vertices_per_side * 3) * LEFT_FACE_START_INDEX;
+    auto step = 1.0f / (vertices_per_side - 1UL);
+    auto n = (vertices_per_side * vertices_per_side * 3U) * LEFT_FACE_START_INDEX;
 
     QVector3D temp;
 
-    for(uint32_t i = 0; i < vertices_per_side; i++)
+    for(auto i = 0U; i < vertices_per_side; i++)
     {
-        for(uint32_t j = 0; j < vertices_per_side; j++)
+        for(auto j = 0U; j < vertices_per_side; j++)
         {
             temp.setX(-0.5f);           // X
             temp.setY(i * step - 0.5f); // Y
@@ -145,11 +145,11 @@ static void generate_left_face(std::vector<float>& vertices,
     }
 
     n = ((vertices_per_side - 1UL)  * (vertices_per_side - 1UL) * 6UL) * LEFT_FACE_START_INDEX;
-    uint32_t offset = vertices_per_side * vertices_per_side * LEFT_FACE_START_INDEX;
+    auto offset = vertices_per_side * vertices_per_side * LEFT_FACE_START_INDEX;
 
-    for(uint32_t i = 0; i < vertices_per_side - 1; ++i)
+    for(auto i = 0U; i < vertices_per_side - 1U; ++i)
     {
-        for(uint32_t j = 0; j < vertices_per_side - 1; ++j)
+        for(auto j = 0U; j < vertices_per_side - 1U; ++j)
         {
             indices.at(n + 0UL) = offset + (i * vertices_per_side) + j;       // X
             indices.at(n + 1UL) = offset + (i * vertices_per_side) + j + 1UL; // Y
@@ -171,14 +171,14 @@ static void generate_right_face(std::vector<float>& vertices,
                                 std::vector<uint32_t>& indices,
                                 const uint32_t vertices_per_side)
 {
-    float step = 1.0 / (vertices_per_side - 1UL);
-    uint32_t n = (vertices_per_side * vertices_per_side * 3) * RIGHT_FACE_START_INDEX;
+    auto step = 1.0f / (vertices_per_side - 1UL);
+    auto n = (vertices_per_side * vertices_per_side * 3U) * RIGHT_FACE_START_INDEX;
 
     QVector3D temp;
 
-    for(uint32_t i = 0; i < vertices_per_side; i++)
+    for(auto i = 0U; i < vertices_per_side; i++)
     {
-        for(uint32_t j = 0; j < vertices_per_side; j++)
+        for(auto j = 0U; j < vertices_per_side; j++)
         {
             temp.setX(0.5f);            // X
             temp.setY(i * step - 0.5f); // Y
@@ -195,11 +195,11 @@ static void generate_right_face(std::vector<float>& vertices,
     }
 
     n = ((vertices_per_side - 1UL)  * (vertices_per_side - 1UL) * 6UL) * RIGHT_FACE_START_INDEX;
-    uint32_t offset = vertices_per_side * vertices_per_side * RIGHT_FACE_START_INDEX;
+    auto offset = vertices_per_side * vertices_per_side * RIGHT_FACE_START_INDEX;
 
-    for(uint32_t i = 0; i < vertices_per_side - 1; ++i)
+    for(auto i = 0U; i < vertices_per_side - 1U; ++i)
     {
-        for(uint32_t j = 0; j < vertices_per_side - 1; ++j)
+        for(auto j = 0U; j < vertices_per_side - 1U; ++j)
         {
             indices.at(n + 0UL) = offset + (i * vertices_per_side) + j;       // X
             indices.at(n + 1UL) = offset + (i * vertices_per_side) + j + 1UL; // Y
@@ -221,14 +221,14 @@ static void generate_top_face(std::vector<float>& vertices,
                               std::vector<uint32_t>& indices,
                               const uint32_t vertices_per_side)
 {
-    float step = 1.0 / (vertices_per_side - 1UL);
-    uint32_t n = (vertices_per_side * vertices_per_side * 3) * TOP_FACE_START_INDEX;
+    auto step = 1.0f / (vertices_per_side - 1UL);
+    auto n = (vertices_per_side * vertices_per_side * 3U) * TOP_FACE_START_INDEX;
 
     QVector3D temp;
 
-    for(uint32_t i = 0; i < vertices_per_side; i++)
+    for(auto i = 0U; i < vertices_per_side; i++)
     {
-        for(uint32_t j = 0; j < vertices_per_side; j++)
+        for(auto j = 0U; j < vertices_per_side; j++)
         {
             temp.setX(1.0f - (j * step) - 0.5f); // X
             temp.setY(0.5f);            // Y
@@ -245,11 +245,11 @@ static void generate_top_face(std::vector<float>& vertices,
     }
 
     n = ((vertices_per_side - 1UL)  * (vertices_per_side - 1UL) * 6UL) * TOP_FACE_START_INDEX;
-    uint32_t offset = vertices_per_side * vertices_per_side * TOP_FACE_START_INDEX;
+    auto offset = vertices_per_side * vertices_per_side * TOP_FACE_START_INDEX;
 
-    for(uint32_t i = 0; i < vertices_per_side - 1; ++i)
+    for(auto i = 0U; i < vertices_per_side - 1U; ++i)
     {
-        for(uint32_t j = 0; j < vertices_per_side - 1; ++j)
+        for(auto j = 0U; j < vertices_per_side - 1U; ++j)
         {
             indices.at(n + 0UL) = offset + (i * vertices_per_side) + j;       // X
             indices.at(n + 1UL) = offset + (i * vertices_per_side) + j + 1UL; // Y
@@ -271,14 +271,14 @@ static void generate_bottom_face(std::vector<float>& vertices,
                                  std::vector<uint32_t>& indices,
                                  const uint32_t vertices_per_side)
 {
-    float step = 1.0 / (vertices_per_side - 1UL);
-    uint32_t n = (vertices_per_side * vertices_per_side * 3) * BOTTOM_FACE_START_INDEX;
+    auto step = 1.0f / (vertices_per_side - 1UL);
+    auto n = (vertices_per_side * vertices_per_side * 3U) * BOTTOM_FACE_START_INDEX;
 
     QVector3D temp;
 
-    for(uint32_t i = 0; i < vertices_per_side; i++)
+    for(auto i = 0U; i < vertices_per_side; i++)
     {
-        for(uint32_t j = 0; j < vertices_per_side; j++)
+        for(auto j = 0U; j < vertices_per_side; j++)
         {
             temp.setX(j * step - 0.5f); // X
             temp.setY(-0.5f);           // Y
@@ -295,11 +295,11 @@ static void generate_bottom_face(std::vector<float>& vertices,
     }
 
     n = ((vertices_per_side - 1UL)  * (vertices_per_side - 1UL) * 6UL) * BOTTOM_FACE_START_INDEX;
-    uint32_t offset = vertices_per_side * vertices_per_side * BOTTOM_FACE_START_INDEX;
+    auto offset = vertices_per_side * vertices_per_side * BOTTOM_FACE_START_INDEX;
 
-    for(uint32_t i = 0; i < vertices_per_side - 1; ++i)
+    for(auto i = 0U; i < vertices_per_side - 1U; ++i)
     {
-        for(uint32_t j = 0; j < vertices_per_side - 1; ++j)
+        for(auto j = 0U; j < vertices_per_side - 1U; ++j)
         {
             indices.at(n + 0UL) = offset + (i * vertices_per_side) + j;       // X
             indices.at(n + 1UL) = offset + (i * vertices_per_side) + j + 1UL; // Y
@@ -320,7 +320,7 @@ static void generate_bottom_face(std::vector<float>& vertices,
 std::pair<std::vector<float>, std::vector<uint32_t>>
 generateSubdividedCube(const uint32_t numberOfSubdivisions)
 {
-    const auto verticesPerSide = numberOfSubdivisions + 2;
+    const auto verticesPerSide = numberOfSubdivisions + 2U;
 
     std::vector<float> vertices(((verticesPerSide * verticesPerSide * 3) * 6), 0.0f);
     std::vector<uint32_t> indices((((verticesPerSide - 1) * (verticesPerSide - 1) * 6) * 6), 0UL);
