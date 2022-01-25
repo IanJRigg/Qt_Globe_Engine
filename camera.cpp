@@ -108,9 +108,9 @@ void Camera::setDistanceToFarPlane(float distance)
  */
 QMatrix4x4 Camera::viewMatrixAt(const QVector3D& position) const
 {
-    auto direction { (m_position - ORIGIN).normalized() };
-    auto right { QVector3D::crossProduct(Y_AXIS, direction).normalized() };
-    auto up { QVector3D::crossProduct(direction, right) };
+    auto direction = (m_position - ORIGIN).normalized();
+    auto right = QVector3D::crossProduct(Y_AXIS, direction).normalized();
+    auto up = QVector3D::crossProduct(direction, right);
 
     QMatrix4x4 view; // Identity matrix is now here
     view.lookAt(position, ORIGIN, up);
