@@ -20,13 +20,13 @@ protected:
     void resizeGL(int w, int h) override;
 
 private:
-    void setupOpenGL();
-
-private:
     ShaderProgram m_shaderProgram;
     QOpenGLVertexArrayObject m_vertexArrayObject;
     QOpenGLBuffer m_vertexBufferObject;
     QOpenGLBuffer m_indexBufferObject;
+
+    uint32_t m_numberOfIndices;
+    bool m_renderingWireframe;
 };
 
 #endif // GLOBEWIDGET_H
