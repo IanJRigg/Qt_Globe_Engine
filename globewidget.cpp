@@ -87,7 +87,7 @@ void GlobeWidget::initializeGL()
 void GlobeWidget::paintGL()
 {
     // Needed for every frame that's rendered to screen
-    const qreal retinaScale = devicePixelRatio();
+    const auto retinaScale = devicePixelRatio();
     glViewport(0, 0, width() * retinaScale, height() * retinaScale);
 
     // Set the background color = clear color
