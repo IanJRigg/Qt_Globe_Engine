@@ -25,6 +25,7 @@ private:
     QOpenGLBuffer m_vertexBufferObject;
     QOpenGLBuffer m_indexBufferObject;
 
+    uint32_t m_numberOfSubdivisions;
     uint32_t m_numberOfIndices;
     bool m_renderingWireframe;
 };

@@ -10,6 +10,7 @@ GlobeWidget::GlobeWidget(QWidget* parent) :
     m_vertexArrayObject(),
     m_vertexBufferObject(QOpenGLBuffer::VertexBuffer),
     m_indexBufferObject(QOpenGLBuffer::IndexBuffer),
+    m_numberOfSubdivisions(10),
     m_numberOfIndices(0),
     m_renderingWireframe(true)
 {
@@ -51,7 +52,7 @@ void GlobeWidget::initializeGL()
     }
 
     // Generate the model for the sphere
-    const auto [vertices, indices] = generateSubdividedCube(1);
+    const auto [vertices, indices] = generateSubdividedCube(m_numberOfSubdivisions);
 
     m_vertexArrayObject.bind();
     m_vertexBufferObject.bind();
