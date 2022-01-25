@@ -1,6 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>cube-map.frag</file>
-        <file>cube-map.vert</file>
+        <file>shaders/pass_through.vert</file>
+        <file>shaders/uniform_color.frag</file>
+        <file>shaders/cube-map.vert</file>
+        <file>shaders/cube-map.frag</file>
     </qresource>
 </RCC>
