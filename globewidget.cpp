@@ -19,7 +19,7 @@ void GlobeWidget::initializeGL()
     initializeOpenGLFunctions();
 
     // Create the shader program
-    m_shaderProgram.create(":/cube-map.vert", ":/cube-map.frag");
+    m_shaderProgram.create(":/shaders/cube-map.vert", ":/shaders/cube-map.frag");
 
     // Create the VBO
     m_vertexBufferObject = QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
