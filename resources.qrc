@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>cube-map.frag</file>
+        <file>cube-map.vert</file>
+    </qresource>
+</RCC>
