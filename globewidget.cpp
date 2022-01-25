@@ -8,13 +8,20 @@ GlobeWidget::GlobeWidget(QWidget* parent) :
     QOpenGLWidget(parent),
     m_shaderProgram(),
     m_vertexArrayObject(),
-    m_vertexBufferObject(QOpenGLBuffer::VertexBuffer),
-    m_indexBufferObject(QOpenGLBuffer::IndexBuffer),
+    m_vertexBufferObject(QOpenGLBuffer::VertexBuffer), // constructor is pass through, no OpenGL initialization required
+    m_indexBufferObject(QOpenGLBuffer::IndexBuffer), // constructor is pass through, no OpenGL initialization required
     m_numberOfSubdivisions(10),
     m_numberOfIndices(0),
     m_renderingWireframe(true)
 {
 
+}
+
+GlobeWidget::~GlobeWidget()
+{
+    m_vertexArrayObject.destroy();
+    m_vertexBufferObject.destroy();
+    m_indexBufferObject.destroy();
 }
 
 /**
@@ -69,9 +76,9 @@ void GlobeWidget::initializeGL()
     // Record the number of indices used in the operation above. Needed for glDrawElements()
     m_numberOfIndices = indices.size();
 
-    // m_indexBufferObject.release();
-    m_vertexBufferObject.release();
     m_vertexArrayObject.release();
+    m_vertexBufferObject.release();
+    m_indexBufferObject.release();
 }
 
 /**
@@ -102,7 +109,6 @@ void GlobeWidget::paintGL()
     {
         glDrawElements(GL_TRIANGLES, m_numberOfIndices, GL_UNSIGNED_INT, nullptr);
     }
-
 
     m_vertexArrayObject.release();
 }

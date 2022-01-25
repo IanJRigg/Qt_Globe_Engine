@@ -13,6 +13,7 @@ class GlobeWidget : public QOpenGLWidget, protected QOpenGLFunctions
     Q_OBJECT
 public:
     explicit GlobeWidget(QWidget* parent = nullptr);
+    virtual ~GlobeWidget() override;
 
 protected:
     void initializeGL() override;
