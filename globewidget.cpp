@@ -25,7 +25,7 @@ void GlobeWidget::initializeGL()
     m_vertexBufferObject = QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     m_vertexBufferObject.create();
     m_vertexBufferObject.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    if(m_vertexBufferObject.isCreated())
+    if(!m_vertexBufferObject.isCreated())
     {
         qDebug() << "Could not create VBO!";
     }
@@ -42,6 +42,7 @@ void GlobeWidget::initializeGL()
         qDebug() << "Could not create VAO!";
     }
 
+    // Generate the model for the sphere
     const auto [vertices, indices] = generateSubdividedCube(1);
 
     m_vertexArrayObject.bind();
