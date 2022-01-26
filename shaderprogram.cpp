@@ -6,9 +6,9 @@
  * \brief
  */
 ShaderProgram::ShaderProgram() :
-    m_programCreatedSuccessfully(false),
-    m_layout(),
-    m_program(nullptr)
+    m_programCreatedSuccessfully{false},
+    m_layout{},
+    m_program{nullptr}
 {
 
 }
@@ -57,7 +57,12 @@ void ShaderProgram::create(const QString &vertex_shader_path, const QString &fra
 /**
  * \brief
  */
-void ShaderProgram::setAttribute(int location, GLenum type, int offset, int tupleSize, int stride, const QString &locationName)
+void ShaderProgram::setAttribute(const int location,
+                                 const GLenum type,
+                                 const int offset,
+                                 const int tupleSize,
+                                 const int stride,
+                                 const QString &locationName)
 {
     // Make sure a program exists before calling this function
     Q_ASSERT(m_program != nullptr);
@@ -67,6 +72,14 @@ void ShaderProgram::setAttribute(int location, GLenum type, int offset, int tupl
     m_program->setAttributeBuffer(location, type, offset, tupleSize, stride);
 
     // Update the layout structure
+}
+
+/**
+ * \brief
+ */
+void ShaderProgram::setMVPMatrix(QMatrix4x4& mvp)
+{
+    m_program->setUniformValue("mvp", mvp);
 }
 
 /**
