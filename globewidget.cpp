@@ -83,7 +83,7 @@ void GlobeWidget::initializeGL()
     m_indexBufferObject.release();
 
     // Setup the camera
-    m_camera.setFieldOfView(45.0f);
+    m_camera.setFieldOfView(90.0f);
     m_camera.setDistanceToNearPlane(0.1f);
     m_camera.setDistanceToFarPlane(10.0f);
 }
@@ -108,12 +108,11 @@ void GlobeWidget::paintGL()
     m_vertexArrayObject.bind();
 
     // Update the MVP Matrix
-    QMatrix4x4 modelMatrix; // Just the identity here
-    auto viewMatrix = m_camera.viewMatrixAtPosition();
-    auto projectionMatrix = m_camera.projectionMatrix(16.0f / 9.0f); // TODO: Calculate this instead of using a constant
+    QMatrix4x4 model; // Just the identity here
+    auto view = m_camera.viewMatrixAtPosition();
+    auto projection = m_camera.projectionMatrix(16.0f / 9.0f); // TODO: Calculate this instead of using a constant
 
-    auto mvpMatrix = modelMatrix * viewMatrix * projectionMatrix;
-    m_shaderProgram.setMVPMatrix(mvpMatrix);
+    m_shaderProgram.setUniformMatrix("mvp", projection * view * model);
 
     // now draw the two triangles via index drawing
     if(m_renderingWireframe)
