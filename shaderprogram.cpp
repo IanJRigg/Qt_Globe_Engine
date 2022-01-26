@@ -77,9 +77,9 @@ void ShaderProgram::setAttribute(const int location,
 /**
  * \brief
  */
-void ShaderProgram::setMVPMatrix(QMatrix4x4& mvp)
+void ShaderProgram::setUniformMatrix(const QString& name, const QMatrix4x4& matrix)
 {
-    m_program->setUniformValue("mvp", mvp);
+    m_program->setUniformValue(name.toStdString().c_str(), matrix);
 }
 
 /**

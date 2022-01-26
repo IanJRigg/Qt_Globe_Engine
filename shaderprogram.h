@@ -17,7 +17,7 @@ public:
                       int tupleSize,
                       int stride = 0,
                       const QString& locationName = "");
-    void setMVPMatrix(QMatrix4x4& mvp);
+    void setUniformMatrix(const QString& name, const QMatrix4x4& mvp);
 
     bool isCreated() const;
     void bind() const;
