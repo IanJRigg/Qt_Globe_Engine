@@ -20,9 +20,5 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         ui->GlobeRenderArea->rotateCamera();
         ui->GlobeRenderArea->update();
     }
-    else
-    {
-        qDebug() << "Da fuck";
-    }
 }
 

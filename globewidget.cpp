@@ -162,7 +162,5 @@ void GlobeWidget::rotateCamera()
     newCameraPosition.setY(0.0f);
     newCameraPosition.setZ(m_cameraRadius * qCos(qDegreesToRadians(m_cameraAzimuth)));
 
-    qDebug() << newCameraPosition;
-
     m_camera.setPosition(newCameraPosition);
 }
