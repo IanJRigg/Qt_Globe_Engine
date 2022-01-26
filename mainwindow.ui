@@ -31,9 +31,9 @@
      <number>1</number>
     </property>
     <item row="0" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="GlobeLayout">
       <item>
-       <widget class="GlobeWidget" name="openGLWidget"/>
+       <widget class="GlobeWidget" name="GlobeRenderArea"/>
       </item>
      </layout>
     </item>
@@ -48,7 +48,19 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionQuit"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

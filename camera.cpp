@@ -49,6 +49,14 @@ QMatrix4x4 Camera::projectionMatrix(const float aspectRatio) const
 /**
  * \brief
  */
+void Camera::setPosition(const QVector3D position)
+{
+    m_position = position;
+}
+
+/**
+ * \brief
+ */
 float Camera::fieldOfView() const
 {
     return m_fov;

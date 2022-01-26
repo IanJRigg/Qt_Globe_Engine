@@ -14,6 +14,8 @@ public:
     QMatrix4x4 viewMatrixAtOrigin() const;
     QMatrix4x4 projectionMatrix(float aspectRatio) const;
 
+    void setPosition(const QVector3D position);
+
     float fieldOfView() const;
     void setFieldOfView(float fieldOfView);
 

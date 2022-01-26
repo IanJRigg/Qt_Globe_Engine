@@ -5,6 +5,7 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
+#include <QKeyEvent>
 
 #include "shaderprogram.h"
 #include "camera.h"
@@ -21,6 +22,9 @@ protected:
     void paintGL() override;
     void resizeGL(int w, int h) override;
 
+public:
+    void rotateCamera();
+
 private:
     ShaderProgram m_shaderProgram;
     QOpenGLVertexArrayObject m_vertexArrayObject;
@@ -28,6 +32,8 @@ private:
     QOpenGLBuffer m_indexBufferObject;
 
     Camera m_camera;
+    float m_cameraAzimuth;
+    float m_cameraRadius;
 
     uint32_t m_numberOfSubdivisions;
     uint32_t m_numberOfIndices;

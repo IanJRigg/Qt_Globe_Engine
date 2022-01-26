@@ -13,3 +13,16 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::keyPressEvent(QKeyEvent* event)
+{
+    if(event->key() == Qt::Key_A)
+    {
+        ui->GlobeRenderArea->rotateCamera();
+        ui->GlobeRenderArea->update();
+    }
+    else
+    {
+        qDebug() << "Da fuck";
+    }
+}
+

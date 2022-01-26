@@ -1,6 +1,8 @@
 #include "globewidget.h"
 #include "planetgenerator.h"
 
+#include <QtMath>
+
 /**
  * \brief
  */
@@ -11,7 +13,9 @@ GlobeWidget::GlobeWidget(QWidget* parent) :
     m_vertexBufferObject{QOpenGLBuffer::VertexBuffer}, // constructor is pass through, no OpenGL initialization required
     m_indexBufferObject{QOpenGLBuffer::IndexBuffer}, // constructor is pass through, no OpenGL initialization required
     m_camera{},
-    m_numberOfSubdivisions{10},
+    m_cameraAzimuth{0.0f},
+    m_cameraRadius{2.0f},
+    m_numberOfSubdivisions{15},
     m_numberOfIndices{0},
     m_renderingWireframe{true}
 {
@@ -98,7 +102,7 @@ void GlobeWidget::paintGL()
     glViewport(0, 0, width() * retinaScale, height() * retinaScale);
 
     // Set the background color = clear color
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Use the shader program
@@ -107,10 +111,12 @@ void GlobeWidget::paintGL()
     // Bind the vertex array object. This binds the vertex buffer object and sets the attribute buffer in the OpenGL context
     m_vertexArrayObject.bind();
 
-    // Update the MVP Matrix
-    QMatrix4x4 model; // Just the identity here
+    // Generate the MVP Matrix and pass it to the shaders
+    QMatrix4x4 model;
     auto view = m_camera.viewMatrixAtPosition();
-    auto projection = m_camera.projectionMatrix(16.0f / 9.0f); // TODO: Calculate this instead of using a constant
+
+    auto aspectRatio = static_cast<float>(width()) / static_cast<float>(height());
+    auto projection = m_camera.projectionMatrix(aspectRatio);
 
     m_shaderProgram.setUniformMatrix("mvp", projection * view * model);
 
@@ -137,4 +143,26 @@ void GlobeWidget::resizeGL(int w, int h)
 {
     Q_UNUSED(w);
     Q_UNUSED(h);
+}
+
+/**
+ * \brief
+ */
+void GlobeWidget::rotateCamera()
+{
+    // Wrap the azimuth once it's gone over
+    m_cameraAzimuth += 10.0f;
+    if(m_cameraAzimuth > 360.0f || m_cameraAzimuth < 0.0f)
+    {
+        m_cameraAzimuth = 0.0f;
+    }
+
+    QVector3D newCameraPosition;
+    newCameraPosition.setX(m_cameraRadius * qSin(qDegreesToRadians(m_cameraAzimuth)));
+    newCameraPosition.setY(0.0f);
+    newCameraPosition.setZ(m_cameraRadius * qCos(qDegreesToRadians(m_cameraAzimuth)));
+
+    qDebug() << newCameraPosition;
+
+    m_camera.setPosition(newCameraPosition);
 }
