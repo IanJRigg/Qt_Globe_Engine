@@ -7,6 +7,7 @@
 #include <QOpenGLBuffer>
 
 #include "shaderprogram.h"
+#include "camera.h"
 
 class GlobeWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -25,6 +26,8 @@ private:
     QOpenGLVertexArrayObject m_vertexArrayObject;
     QOpenGLBuffer m_vertexBufferObject;
     QOpenGLBuffer m_indexBufferObject;
+
+    Camera m_camera;
 
     uint32_t m_numberOfSubdivisions;
     uint32_t m_numberOfIndices;

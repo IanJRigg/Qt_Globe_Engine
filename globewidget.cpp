@@ -5,14 +5,15 @@
  * \brief
  */
 GlobeWidget::GlobeWidget(QWidget* parent) :
-    QOpenGLWidget(parent),
-    m_shaderProgram(),
-    m_vertexArrayObject(),
-    m_vertexBufferObject(QOpenGLBuffer::VertexBuffer), // constructor is pass through, no OpenGL initialization required
-    m_indexBufferObject(QOpenGLBuffer::IndexBuffer), // constructor is pass through, no OpenGL initialization required
-    m_numberOfSubdivisions(10),
-    m_numberOfIndices(0),
-    m_renderingWireframe(true)
+    QOpenGLWidget{parent},
+    m_shaderProgram{},
+    m_vertexArrayObject{},
+    m_vertexBufferObject{QOpenGLBuffer::VertexBuffer}, // constructor is pass through, no OpenGL initialization required
+    m_indexBufferObject{QOpenGLBuffer::IndexBuffer}, // constructor is pass through, no OpenGL initialization required
+    m_camera{},
+    m_numberOfSubdivisions{10},
+    m_numberOfIndices{0},
+    m_renderingWireframe{true}
 {
 
 }
@@ -29,11 +30,12 @@ GlobeWidget::~GlobeWidget()
  */
 void GlobeWidget::initializeGL()
 {
+    // Make the initialization call here. This MUST be done prior to any OpenGL function calls
     initializeOpenGLFunctions();
 
     // Create the shader program
-    // m_shaderProgram.create(":/shaders/cube-map.vert", ":/shaders/cube-map.frag");
-    m_shaderProgram.create(":/shaders/pass_through.vert", ":/shaders/uniform_color.frag");
+    m_shaderProgram.create(":/shaders/cube-map.vert", ":/shaders/cube-map.frag");
+    // m_shaderProgram.create(":/shaders/pass_through.vert", ":/shaders/uniform_color.frag");
 
     // Create the VBO
     m_vertexBufferObject.create();
@@ -70,7 +72,7 @@ void GlobeWidget::initializeGL()
     m_indexBufferObject.allocate(indices.data(), indices.size() * sizeof(uint32_t));
 
     // Assign position 0 to be the vertices of the globe
-    auto stride = 3 * sizeof(float);
+    auto stride = (3 * sizeof(float));
     m_shaderProgram.setAttribute(0, GL_FLOAT, 0, 3, stride, "Vertices");
 
     // Record the number of indices used in the operation above. Needed for glDrawElements()
@@ -79,6 +81,11 @@ void GlobeWidget::initializeGL()
     m_vertexArrayObject.release();
     m_vertexBufferObject.release();
     m_indexBufferObject.release();
+
+    // Setup the camera
+    m_camera.setFieldOfView(45.0f);
+    m_camera.setDistanceToNearPlane(0.1f);
+    m_camera.setDistanceToFarPlane(10.0f);
 }
 
 /**
@@ -99,6 +106,14 @@ void GlobeWidget::paintGL()
 
     // Bind the vertex array object. This binds the vertex buffer object and sets the attribute buffer in the OpenGL context
     m_vertexArrayObject.bind();
+
+    // Update the MVP Matrix
+    QMatrix4x4 modelMatrix; // Just the identity here
+    auto viewMatrix = m_camera.viewMatrixAtPosition();
+    auto projectionMatrix = m_camera.projectionMatrix(16.0f / 9.0f); // TODO: Calculate this instead of using a constant
+
+    auto mvpMatrix = modelMatrix * viewMatrix * projectionMatrix;
+    m_shaderProgram.setMVPMatrix(mvpMatrix);
 
     // now draw the two triangles via index drawing
     if(m_renderingWireframe)
