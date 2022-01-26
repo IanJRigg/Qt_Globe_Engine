@@ -15,9 +15,34 @@ MainWindow::~MainWindow()
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
-    if(event->key() == Qt::Key_A)
+    auto cameraAnglesHaveChanged = false;
+    if(event->key() == Qt::Key_Left)
     {
-        ui->GlobeRenderArea->rotateCamera();
+        ui->GlobeRenderArea->decreaseCameraAzimuth();
+        cameraAnglesHaveChanged = true;
+    }
+
+    if(event->key() == Qt::Key_Right)
+    {
+        ui->GlobeRenderArea->increaseCameraAzimuth();
+        cameraAnglesHaveChanged = true;
+    }
+
+    if(event->key() == Qt::Key_Up)
+    {
+        ui->GlobeRenderArea->increaseCameraElevation();
+        cameraAnglesHaveChanged = true;
+    }
+
+    if(event->key() == Qt::Key_Down)
+    {
+        ui->GlobeRenderArea->decreaseCameraElevation();
+        cameraAnglesHaveChanged = true;
+    }
+
+    if(cameraAnglesHaveChanged)
+    {
+        ui->GlobeRenderArea->updateCameraPosition();
         ui->GlobeRenderArea->update();
     }
 }

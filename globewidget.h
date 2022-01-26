@@ -17,13 +17,22 @@ public:
     explicit GlobeWidget(QWidget* parent = nullptr);
     virtual ~GlobeWidget() override;
 
+    void updateCameraPosition();
+
+    void increaseCameraAzimuth();
+    void decreaseCameraAzimuth();
+
+    void increaseCameraElevation();
+    void decreaseCameraElevation();
+
 protected:
     void initializeGL() override;
     void paintGL() override;
     void resizeGL(int w, int h) override;
 
-public:
-    void rotateCamera();
+private:
+    void updateAzimuth(float difference);
+    void updateElevation(float difference);
 
 private:
     ShaderProgram m_shaderProgram;
@@ -33,6 +42,7 @@ private:
 
     Camera m_camera;
     float m_cameraAzimuth;
+    float m_cameraElevation;
     float m_cameraRadius;
 
     uint32_t m_numberOfSubdivisions;

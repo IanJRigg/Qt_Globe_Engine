@@ -57,6 +57,14 @@ void Camera::setPosition(const QVector3D position)
 /**
  * \brief
  */
+QVector3D Camera::position() const
+{
+    return m_position;
+}
+
+/**
+ * \brief
+ */
 float Camera::fieldOfView() const
 {
     return m_fov;

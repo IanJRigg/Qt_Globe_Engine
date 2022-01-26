@@ -14,6 +14,7 @@ GlobeWidget::GlobeWidget(QWidget* parent) :
     m_indexBufferObject{QOpenGLBuffer::IndexBuffer}, // constructor is pass through, no OpenGL initialization required
     m_camera{},
     m_cameraAzimuth{0.0f},
+    m_cameraElevation{0.0},
     m_cameraRadius{2.0f},
     m_numberOfSubdivisions{15},
     m_numberOfIndices{0},
@@ -22,11 +23,58 @@ GlobeWidget::GlobeWidget(QWidget* parent) :
 
 }
 
+/**
+ * \brief
+ */
 GlobeWidget::~GlobeWidget()
 {
     m_vertexArrayObject.destroy();
     m_vertexBufferObject.destroy();
     m_indexBufferObject.destroy();
+}
+
+void GlobeWidget::updateCameraPosition()
+{
+    QVector3D newCameraPosition;
+    newCameraPosition.setY(m_cameraRadius * qSin(qDegreesToRadians(m_cameraElevation)));
+    auto hypotenuse = m_cameraRadius * qCos(qDegreesToRadians(m_cameraElevation));
+
+    newCameraPosition.setX(hypotenuse * qSin(qDegreesToRadians(m_cameraAzimuth)));
+    newCameraPosition.setZ(hypotenuse * qCos(qDegreesToRadians(m_cameraAzimuth)));
+
+    m_camera.setPosition(newCameraPosition);
+}
+
+/**
+ * \brief
+ */
+void GlobeWidget::increaseCameraAzimuth()
+{
+    updateAzimuth(10.0f);
+}
+
+/**
+ * \brief
+ */
+void GlobeWidget::decreaseCameraAzimuth()
+{
+    updateAzimuth(-10.0f);
+}
+
+/**
+ * \brief
+ */
+void GlobeWidget::increaseCameraElevation()
+{
+    updateElevation(5.0f);
+}
+
+/**
+ * \brief
+ */
+void GlobeWidget::decreaseCameraElevation()
+{
+    updateElevation(-5.0f);
 }
 
 /**
@@ -141,26 +189,40 @@ void GlobeWidget::paintGL()
  */
 void GlobeWidget::resizeGL(int w, int h)
 {
-    Q_UNUSED(w);
-    Q_UNUSED(h);
 }
 
 /**
  * \brief
  */
-void GlobeWidget::rotateCamera()
+void GlobeWidget::updateAzimuth(const float difference)
 {
+    // Input sanitization
+    Q_ASSERT(difference <= 360.0f && difference >= -360.0f);
+
     // Wrap the azimuth once it's gone over
-    m_cameraAzimuth += 10.0f;
-    if(m_cameraAzimuth > 360.0f || m_cameraAzimuth < 0.0f)
+    m_cameraAzimuth += difference;
+    if(m_cameraAzimuth > 360.0f || m_cameraAzimuth < -360.0f)
     {
         m_cameraAzimuth = 0.0f;
     }
+}
 
-    QVector3D newCameraPosition;
-    newCameraPosition.setX(m_cameraRadius * qSin(qDegreesToRadians(m_cameraAzimuth)));
-    newCameraPosition.setY(0.0f);
-    newCameraPosition.setZ(m_cameraRadius * qCos(qDegreesToRadians(m_cameraAzimuth)));
+/**
+ * \brief
+ */
+void GlobeWidget::updateElevation(float difference)
+{
+    // Input sanitization
+    Q_ASSERT(difference <= 80.0f && difference >= -80.0f);
 
-    m_camera.setPosition(newCameraPosition);
+    // Bail out if you're too close to the poles
+    m_cameraElevation += difference;
+    if(m_cameraElevation >= 80.0f)
+    {
+        m_cameraElevation = 80.0f;
+    }
+    else if(m_cameraElevation < -80.0f)
+    {
+        m_cameraElevation = -80.0f;
+    }
 }
