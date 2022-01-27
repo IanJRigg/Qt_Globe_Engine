@@ -79,7 +79,21 @@ void ShaderProgram::setAttribute(const int location,
  */
 void ShaderProgram::setUniformMatrix(const QString& name, const QMatrix4x4& matrix)
 {
+    // Make sure a program exists before calling this function
+    Q_ASSERT(m_program != nullptr);
+
     m_program->setUniformValue(name.toStdString().c_str(), matrix);
+}
+
+/**
+ * \brief
+ */
+void ShaderProgram::setUniformValue(const QString &name, const GLint value)
+{
+    // Make sure a program exists before calling this function
+    Q_ASSERT(m_program != nullptr);
+
+    m_program->setUniformValue(name.toStdString().c_str(), value);
 }
 
 /**

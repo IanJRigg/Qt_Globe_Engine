@@ -18,6 +18,7 @@ public:
                       int stride = 0,
                       const QString& locationName = "");
     void setUniformMatrix(const QString& name, const QMatrix4x4& mvp);
+    void setUniformValue(const QString& name, GLint value);
 
     bool isCreated() const;
     void bind() const;

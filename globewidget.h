@@ -5,7 +5,7 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
-#include <QKeyEvent>
+#include <QOpenGLTexture>
 
 #include "shaderprogram.h"
 #include "camera.h"
@@ -31,6 +31,11 @@ protected:
     void resizeGL(int w, int h) override;
 
 private:
+    void initializeShaderProgram();
+    void initializePlanetMesh();
+    void initializeCamera();
+    void initializeCubeMap();
+
     void updateAzimuth(float difference);
     void updateElevation(float difference);
 
@@ -39,6 +44,7 @@ private:
     QOpenGLVertexArrayObject m_vertexArrayObject;
     QOpenGLBuffer m_vertexBufferObject;
     QOpenGLBuffer m_indexBufferObject;
+    QOpenGLTexture m_texture;
 
     Camera m_camera;
     float m_cameraAzimuth;

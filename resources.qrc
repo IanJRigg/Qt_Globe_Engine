@@ -4,5 +4,11 @@
         <file>shaders/uniform_color.frag</file>
         <file>shaders/cube-map.vert</file>
         <file>shaders/cube-map.frag</file>
+        <file>textures/africa.png</file>
+        <file>textures/americas.png</file>
+        <file>textures/antarctica.png</file>
+        <file>textures/arctic.png</file>
+        <file>textures/asia.png</file>
+        <file>textures/pacific.png</file>
     </qresource>
 </RCC>
