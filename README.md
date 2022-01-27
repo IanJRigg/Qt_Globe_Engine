@@ -3,3 +3,5 @@ This is conversion of an old OpenGL Globe Engine to use Qt Version 6 instead of 
 
 This project is in progress as I work through getting Qt and OpenGL to work together.
 
+![Image of the application running](/images/screenshot.png?raw=true)
+
