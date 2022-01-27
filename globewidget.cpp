@@ -100,6 +100,9 @@ void GlobeWidget::initializeGL()
     // Qt function that MUST be done prior to any OpenGL function calls
     initializeOpenGLFunctions();
 
+    // Enable backface culling. This prevents the far face of the sphere from being simulatneously visible with the front face
+    glEnable(GL_CULL_FACE);
+
     // Custom calls to setup the scene
     initializeShaderProgram();
     initializePlanetMesh();
@@ -118,7 +121,7 @@ void GlobeWidget::paintGL()
 
     // Set the background color = clear color
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Use the shader program
     m_shaderProgram.bind();
@@ -155,12 +158,10 @@ void GlobeWidget::paintGL()
 /**
  * \brief Triggered when the window resizes. The only purpose of this function wil be to
  *        adjust the MVP matrices as needed for this change.
- * \param w
- * \param h
  */
-void GlobeWidget::resizeGL(int w, int h)
+void GlobeWidget::resizeGL(int, int)
 {
-
+    paintGL();
 }
 
 /**
@@ -169,7 +170,6 @@ void GlobeWidget::resizeGL(int w, int h)
 void GlobeWidget::initializeShaderProgram()
 {
     m_shaderProgram.create(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
-    // m_shaderProgram.create(":/shaders/pass_through.vert", ":/shaders/uniform_color.frag");
 }
 
 /**
