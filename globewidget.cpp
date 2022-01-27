@@ -29,7 +29,7 @@ GlobeWidget::GlobeWidget(QWidget* parent) :
     m_camera{},
     m_cameraAzimuth{0.0f},
     m_cameraElevation{0.0},
-    m_cameraRadius{2.0f},
+    m_cameraRadius{7.5f},
     m_numberOfSubdivisions{15},
     m_numberOfIndices{0},
     m_renderingWireframe{false}
@@ -42,6 +42,9 @@ GlobeWidget::GlobeWidget(QWidget* parent) :
  */
 GlobeWidget::~GlobeWidget()
 {
+    // Context must be made current because there's no guarantee of which context is current at destruction time
+    makeCurrent();
+
     m_vertexArrayObject.destroy();
     m_vertexBufferObject.destroy();
     m_indexBufferObject.destroy();
@@ -79,6 +82,28 @@ void GlobeWidget::decreaseCameraAzimuth()
 /**
  * \brief
  */
+void GlobeWidget::zoomIn()
+{
+    if(m_cameraRadius > 2.4f)
+    {
+        m_cameraRadius -= 0.2f;
+    }
+}
+
+/**
+ * \brief
+ */
+void GlobeWidget::zoomOut()
+{
+    if(m_cameraRadius < 7.5f)
+    {
+        m_cameraRadius += 0.2f;
+    }
+}
+
+/**
+ * \brief
+ */
 void GlobeWidget::increaseCameraElevation()
 {
     updateElevation(5.0f);
@@ -90,6 +115,22 @@ void GlobeWidget::increaseCameraElevation()
 void GlobeWidget::decreaseCameraElevation()
 {
     updateElevation(-5.0f);
+}
+
+/**
+ * \brief
+ */
+void GlobeWidget::enableWireframe()
+{
+    m_renderingWireframe = true;
+}
+
+/**
+ * \brief
+ */
+void GlobeWidget::disableWireframe()
+{
+    m_renderingWireframe = false;
 }
 
 /**
@@ -229,7 +270,7 @@ void GlobeWidget::initializePlanetMesh()
   */
 void GlobeWidget::initializeCamera()
 {
-    m_camera.setFieldOfView(90.0f);
+    m_camera.setFieldOfView(20.0f);
     m_camera.setDistanceToNearPlane(0.1f);
     m_camera.setDistanceToFarPlane(10.0f);
 }

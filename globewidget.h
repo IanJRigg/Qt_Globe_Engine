@@ -22,8 +22,14 @@ public:
     void increaseCameraAzimuth();
     void decreaseCameraAzimuth();
 
+    void zoomIn();
+    void zoomOut();
+
     void increaseCameraElevation();
     void decreaseCameraElevation();
+
+    void enableWireframe();
+    void disableWireframe();
 
 protected:
     void initializeGL() override;

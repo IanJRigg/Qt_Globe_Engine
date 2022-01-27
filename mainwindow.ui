@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
@@ -48,17 +51,44 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="nativeMenuBar">
+    <bool>true</bool>
+   </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionQuit"/>
+    <addaction name="Quit_Action"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="Wireframe_On_Action"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
   </widget>
-  <action name="actionQuit">
+  <action name="Quit_Action">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Quit</string>
+   </property>
+  </action>
+  <action name="Wireframe_On_Action">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Wireframe On</string>
    </property>
   </action>
  </widget>

@@ -17,6 +17,11 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
+
+private slots:
+    void on_Wireframe_On_Action_toggled(bool enabled);
+    void on_Quit_Action_triggered();
 
 private:
     Ui::MainWindow *ui;

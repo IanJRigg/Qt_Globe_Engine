@@ -10,7 +10,7 @@ namespace
  * \brief
  */
 Camera::Camera() :
-    m_position{0.0f, 0.0f, 2.0f},
+    m_position{0.0f, 0.0f, 7.5f},
     m_rotation{},
     m_fov{0.0f},
     m_distanceToNearPlane{0.0f},
