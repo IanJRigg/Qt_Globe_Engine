@@ -17,16 +17,8 @@ public:
     explicit GlobeWidget(QWidget* parent = nullptr);
     virtual ~GlobeWidget() override;
 
-    void updateCameraPosition();
-
-    void increaseCameraAzimuth();
-    void decreaseCameraAzimuth();
-
-    void zoomIn();
-    void zoomOut();
-
-    void increaseCameraElevation();
-    void decreaseCameraElevation();
+    void updateCameraRadius(float wheelInput);
+    void updateCameraPositionAngles(float horizontalInput, float verticalInput);
 
     void enableWireframe();
     void disableWireframe();
@@ -44,6 +36,9 @@ private:
 
     void updateAzimuth(float difference);
     void updateElevation(float difference);
+    void updateRadius(float difference);
+
+    void updateCameraPosition();
 
 private:
     ShaderProgram m_shaderProgram;

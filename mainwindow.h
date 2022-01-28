@@ -7,6 +7,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+class GlobeWidget;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -25,5 +26,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    GlobeWidget* m_globeRenderArea;
 };
 #endif // MAINWINDOW_H

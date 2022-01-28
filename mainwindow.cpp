@@ -3,18 +3,29 @@
 
 #include <QKeyEvent>
 
+namespace
+{
+    constexpr auto INPUT_HIGH = 1.0f;
+    constexpr auto INPUT_HIGH_INVERTED = -1.0f;
+    constexpr auto INPUT_LOW = 0.0f;
+
+    constexpr auto ANGLE_DELTA_NO_INPUT = 0;
+}
+
 /**
- * \brief
+ * \brief Standard constructor for a QMainWindow.
  */
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    m_globeRenderArea = ui->GlobeRenderArea;
 }
 
 /**
- * \brief
+ * \brief Standard destructor for a QMainWindow
  */
 MainWindow::~MainWindow()
 {
@@ -22,79 +33,77 @@ MainWindow::~MainWindow()
 }
 
 /**
- * \brief
+ * \brief Slot for the keyPressEvent. This allows the user to manipulate the azimuth/elevation of the camera.
  */
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
-    auto cameraAnglesHaveChanged = false;
+    float horizontalInput {INPUT_LOW};
+    float verticalInput {INPUT_LOW};
+
     if(event->key() == Qt::Key_Left)
     {
-        ui->GlobeRenderArea->decreaseCameraAzimuth();
-        cameraAnglesHaveChanged = true;
+        horizontalInput = INPUT_HIGH_INVERTED;
     }
 
     if(event->key() == Qt::Key_Right)
     {
-        ui->GlobeRenderArea->increaseCameraAzimuth();
-        cameraAnglesHaveChanged = true;
-    }
-
-    if(event->key() == Qt::Key_Up)
-    {
-        ui->GlobeRenderArea->increaseCameraElevation();
-        cameraAnglesHaveChanged = true;
+        horizontalInput = INPUT_HIGH;
     }
 
     if(event->key() == Qt::Key_Down)
     {
-        ui->GlobeRenderArea->decreaseCameraElevation();
-        cameraAnglesHaveChanged = true;
+        verticalInput = INPUT_HIGH_INVERTED;
     }
 
-    if(cameraAnglesHaveChanged)
+    if(event->key() == Qt::Key_Up)
     {
-        ui->GlobeRenderArea->updateCameraPosition();
-        ui->GlobeRenderArea->update();
+        verticalInput = INPUT_HIGH;
+    }
+
+    if(horizontalInput != INPUT_LOW || verticalInput != INPUT_LOW)
+    {
+        m_globeRenderArea->updateCameraPositionAngles(horizontalInput, verticalInput);
     }
 }
 
 /**
- * \brief
+ * \brief Slot for the wheelEvent. This allows the user to manipulate the radius of the camera.
+ *        The wheelInput sign is swapped here because the zoom in operation is subtractive, while
+ *        the zoom out operation is additive.
  */
 void MainWindow::wheelEvent(QWheelEvent* event)
 {
-    if(event->angleDelta().y() > 0)
+    float wheelInput {INPUT_LOW};
+
+    if(event->angleDelta().y() > ANGLE_DELTA_NO_INPUT)
     {
-        ui->GlobeRenderArea->zoomIn();
+        wheelInput = INPUT_HIGH_INVERTED;
     }
-    else if(event->angleDelta().y() < 0)
+    else if(event->angleDelta().y() < ANGLE_DELTA_NO_INPUT)
     {
-        ui->GlobeRenderArea->zoomOut();
+        wheelInput = INPUT_HIGH;
     }
 
-    ui->GlobeRenderArea->updateCameraPosition();
-    ui->GlobeRenderArea->update();
+    m_globeRenderArea->updateCameraRadius(wheelInput);
 }
 
 /**
- * \brief
+ * \brief Slot for the wireframe enable/disable action. Allows the user to turn on wireframe rendering.
  */
 void MainWindow::on_Wireframe_On_Action_toggled(bool enabled)
 {
     if(enabled)
     {
-        ui->GlobeRenderArea->enableWireframe();
+        m_globeRenderArea->enableWireframe();
     }
     else
     {
-        ui->GlobeRenderArea->disableWireframe();
+        m_globeRenderArea->disableWireframe();
     }
-
-    ui->GlobeRenderArea->update();
 }
 
 /**
- * \brief
+ * \brief Slot for the quit action. Allows the user to exit the application.
  */
 void MainWindow::on_Quit_Action_triggered()
 {

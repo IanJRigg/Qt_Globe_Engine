@@ -8,14 +8,14 @@
 class Camera
 {
 public:
-    Camera();
+    Camera(float x, float y, float z);
 
     QMatrix4x4 viewMatrixAtPosition() const;
     QMatrix4x4 viewMatrixAtOrigin() const;
     QMatrix4x4 projectionMatrix(float aspectRatio) const;
 
-    void setPosition(const QVector3D position);
     QVector3D position() const;
+    void setPosition(const QVector3D& position);
 
     float fieldOfView() const;
     void setFieldOfView(float fieldOfView);
@@ -31,7 +31,6 @@ private:
 
 private:
     QVector3D m_position;
-    QQuaternion m_rotation;
 
     float m_fov;
     float m_distanceToNearPlane;

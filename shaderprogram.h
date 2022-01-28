@@ -15,18 +15,16 @@ public:
                       GLenum type,
                       int offset,
                       int tupleSize,
-                      int stride = 0,
-                      const QString& locationName = "");
+                      int stride = 0);
     void setUniformMatrix(const QString& name, const QMatrix4x4& mvp);
     void setUniformValue(const QString& name, GLint value);
 
     bool isCreated() const;
     void bind() const;
-    QString memoryLayout() const;
+    void release() const;
 
 private:
     bool m_programCreatedSuccessfully;
-    QList<QPair<int, QString>> m_layout;
     std::unique_ptr<QOpenGLShaderProgram> m_program;
 };
 

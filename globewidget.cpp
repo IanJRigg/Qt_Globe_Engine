@@ -3,34 +3,58 @@
 
 #include <QtMath>
 
+// Local constants
 namespace
 {
-    const QString VERTEX_SHADER_PATH = ":/shaders/cube-map.vert";
-    const QString FRAGMENT_SHADER_PATH = ":/shaders/cube-map.frag";
+    const auto VERTEX_SHADER_PATH = ":/shaders/cube-map.vert";
+    const auto FRAGMENT_SHADER_PATH = ":/shaders/cube-map.frag";
 
-    const QString CUBEMAP_POSITIVE_X_PATH = ":/textures/asia.png";
-    const QString CUBEMAP_NEGATIVE_X_PATH = ":/textures/americas.png";
-    const QString CUBEMAP_POSITIVE_Y_PATH = ":/textures/arctic.png";
-    const QString CUBEMAP_NEGATIVE_Y_PATH = ":/textures/antarctica.png";
-    const QString CUBEMAP_POSITIVE_Z_PATH = ":/textures/africa.png";
-    const QString CUBEMAP_NEGATIVE_Z_PATH = ":/textures/pacific.png";
+    const auto CUBEMAP_POSITIVE_X_PATH = ":/textures/asia.png";
+    const auto CUBEMAP_NEGATIVE_X_PATH = ":/textures/americas.png";
+    const auto CUBEMAP_POSITIVE_Y_PATH = ":/textures/arctic.png";
+    const auto CUBEMAP_NEGATIVE_Y_PATH = ":/textures/antarctica.png";
+    const auto CUBEMAP_POSITIVE_Z_PATH = ":/textures/africa.png";
+    const auto CUBEMAP_NEGATIVE_Z_PATH = ":/textures/pacific.png";
+
+    const auto MVP_MATRIX_NAME_IN_SHADERS = "mvp";
+    const auto CUBEMAP_NAME_IN_SHADERS = "CubeMap";
+
+    constexpr auto NUMBER_OF_SUBDIVISIONS = 15;
+
+    constexpr auto RADIUS_LOWER_LIMIT = 2.4f;
+    constexpr auto RADIUS_UPPER_LIMIT = 7.5f;
+    constexpr auto RADIUS_INCREMENT = 0.2f;
+
+    constexpr auto AZIMUTH_ORIGIN = 0.0f;
+    constexpr auto AZIMUTH_LOWER_LIMIT = -360.0f;
+    constexpr auto AZIMUTH_UPPER_LIMIT = 360.0f;
+    constexpr auto AZIMUTH_INCREMENT = 10.0f;
+
+    constexpr auto ELEVATION_ORIGIN = 0.0f;
+    constexpr auto ELEVATION_LOWER_LIMIT = -80.0f;
+    constexpr auto ELEVATION_UPPER_LIMIT = 80.0f;
+    constexpr auto ELEVATION_INCREMENT = 10.0f;
+
+    constexpr auto DEFAULT_FIELD_OF_VIEW = 20.0f;
+    constexpr auto DEFAULT_NEAR_PLANE_DISTANCE = 0.1f;
+    constexpr auto DEFAULT_FAR_PLANE_DISTANCE = 10.0f;
 }
 
 /**
- * \brief
+ * \brief Constructor for the globe widget. Purely used for assignment, no functions should be called here.
  */
 GlobeWidget::GlobeWidget(QWidget* parent) :
-    QOpenGLWidget{parent},
-    m_shaderProgram{},
-    m_vertexArrayObject{},
-    m_vertexBufferObject{QOpenGLBuffer::VertexBuffer}, // constructor is pass through, no OpenGL initialization required
-    m_indexBufferObject{QOpenGLBuffer::IndexBuffer}, // constructor is pass through, no OpenGL initialization required
-    m_texture{QOpenGLTexture::TargetCubeMap}, // Constructor is pass throguh, no OpenGL initialization required
-    m_camera{},
-    m_cameraAzimuth{0.0f},
-    m_cameraElevation{0.0},
-    m_cameraRadius{7.5f},
-    m_numberOfSubdivisions{15},
+    QOpenGLWidget(parent),
+    m_shaderProgram(),
+    m_vertexArrayObject(),
+    m_vertexBufferObject(QOpenGLBuffer::VertexBuffer), // constructor is pass through, no OpenGL initialization required
+    m_indexBufferObject(QOpenGLBuffer::IndexBuffer), // constructor is pass through, no OpenGL initialization required
+    m_texture(QOpenGLTexture::TargetCubeMap), // Constructor is pass throguh, no OpenGL initialization required
+    m_camera(0.0f, 0.0f, RADIUS_UPPER_LIMIT),
+    m_cameraAzimuth{AZIMUTH_ORIGIN},
+    m_cameraElevation{ELEVATION_ORIGIN},
+    m_cameraRadius{RADIUS_UPPER_LIMIT},
+    m_numberOfSubdivisions{NUMBER_OF_SUBDIVISIONS},
     m_numberOfIndices{0},
     m_renderingWireframe{false}
 {
@@ -38,11 +62,11 @@ GlobeWidget::GlobeWidget(QWidget* parent) :
 }
 
 /**
- * \brief
+ * \brief Destructor for the globe widget. The context must be made current because there's
+ *        no guarantee of which context is current at destruction time
  */
 GlobeWidget::~GlobeWidget()
 {
-    // Context must be made current because there's no guarantee of which context is current at destruction time
     makeCurrent();
 
     m_vertexArrayObject.destroy();
@@ -51,90 +75,55 @@ GlobeWidget::~GlobeWidget()
     m_texture.destroy();
 }
 
-void GlobeWidget::updateCameraPosition()
-{
-    QVector3D newCameraPosition;
-    newCameraPosition.setY(m_cameraRadius * qSin(qDegreesToRadians(m_cameraElevation)));
-    auto hypotenuse = m_cameraRadius * qCos(qDegreesToRadians(m_cameraElevation));
-
-    newCameraPosition.setX(hypotenuse * qSin(qDegreesToRadians(m_cameraAzimuth)));
-    newCameraPosition.setZ(hypotenuse * qCos(qDegreesToRadians(m_cameraAzimuth)));
-
-    m_camera.setPosition(newCameraPosition);
-}
-
 /**
- * \brief
+ * \brief Mutator for the camera radius. Radius is updated, the camera position is
+ *        recalculated, and then the scene is re-drawn
  */
-void GlobeWidget::increaseCameraAzimuth()
+void GlobeWidget::updateCameraRadius(const float wheelInput)
 {
-    updateAzimuth(10.0f);
+    updateRadius(RADIUS_INCREMENT * wheelInput);
+    updateCameraPosition();
+
+    this->update();
 }
 
 /**
- * \brief
+ * \brief Mutator for the camera position angles. Azimuth and Elevation are updated, the
+ *        camera position is recalculatued, and then the scene is re-drawn.
  */
-void GlobeWidget::decreaseCameraAzimuth()
+void GlobeWidget::updateCameraPositionAngles(const float horizontalInput, const float verticalInput)
 {
-    updateAzimuth(-10.0f);
+    updateAzimuth(AZIMUTH_INCREMENT * horizontalInput);
+    updateElevation(ELEVATION_INCREMENT * verticalInput);
+
+    updateCameraPosition();
+
+    this->update();
 }
 
 /**
- * \brief
- */
-void GlobeWidget::zoomIn()
-{
-    if(m_cameraRadius > 2.4f)
-    {
-        m_cameraRadius -= 0.2f;
-    }
-}
-
-/**
- * \brief
- */
-void GlobeWidget::zoomOut()
-{
-    if(m_cameraRadius < 7.5f)
-    {
-        m_cameraRadius += 0.2f;
-    }
-}
-
-/**
- * \brief
- */
-void GlobeWidget::increaseCameraElevation()
-{
-    updateElevation(5.0f);
-}
-
-/**
- * \brief
- */
-void GlobeWidget::decreaseCameraElevation()
-{
-    updateElevation(-5.0f);
-}
-
-/**
- * \brief
+ * \brief Basic mutator for the m_renderingWireframe. Calls the parent object's update function
+ *        after making the change
  */
 void GlobeWidget::enableWireframe()
 {
     m_renderingWireframe = true;
+    this->update();
 }
 
 /**
- * \brief
+ * \brief Basic mutator for the m_renderingWireframe. Calls the parent object's update function
+ *        after making the change
  */
 void GlobeWidget::disableWireframe()
 {
     m_renderingWireframe = false;
+    this->update();
 }
 
 /**
- * \brief
+ * \brief Standardized function when using OpenGL with Qt. All initialization that requires
+ *        OpenGL function calls should be done here.
  */
 void GlobeWidget::initializeGL()
 {
@@ -152,7 +141,8 @@ void GlobeWidget::initializeGL()
 }
 
 /**
- * \brief
+ * \brief Standardized function when using OpenGL with Qt. Any time the scene changes and needs
+ *        to be re-drawn, this function should be called.
  */
 void GlobeWidget::paintGL()
 {
@@ -160,16 +150,13 @@ void GlobeWidget::paintGL()
     const auto retinaScale = devicePixelRatio();
     glViewport(0, 0, width() * retinaScale, height() * retinaScale);
 
-    // Set the background color = clear color
+    // Set the background color to a dark black
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Use the shader program
+    // Bind the relevant OpenGL objects
     m_shaderProgram.bind();
-
-    // Bind the vertex array object. This binds the vertex buffer object and sets the attribute buffer in the OpenGL context
     m_vertexArrayObject.bind();
-
     m_texture.bind();
 
     // Generate the MVP Matrix and pass it to the shaders
@@ -179,7 +166,7 @@ void GlobeWidget::paintGL()
     auto aspectRatio = static_cast<float>(width()) / static_cast<float>(height());
     auto projection = m_camera.projectionMatrix(aspectRatio);
 
-    m_shaderProgram.setUniformMatrix("mvp", projection * view * model);
+    m_shaderProgram.setUniformMatrix(MVP_MATRIX_NAME_IN_SHADERS, projection * view * model);
 
     // now draw the two triangles via index drawing
     if(m_renderingWireframe)
@@ -191,9 +178,10 @@ void GlobeWidget::paintGL()
         glDrawElements(GL_TRIANGLES, m_numberOfIndices, GL_UNSIGNED_INT, nullptr);
     }
 
+    // Release the relevant OpenGL objects
     m_texture.release();
     m_vertexArrayObject.release();
-    // m_shaderProgram.release();
+    m_shaderProgram.release();
 }
 
 /**
@@ -206,7 +194,7 @@ void GlobeWidget::resizeGL(int, int)
 }
 
 /**
- * \brief
+ * \brief Utility function to handle creation of m_shaderProgram and anything else related to it.
  */
 void GlobeWidget::initializeShaderProgram()
 {
@@ -214,10 +202,14 @@ void GlobeWidget::initializeShaderProgram()
 }
 
 /**
- * \brief
+ * \brief Utility function to handle creation of m_vertexBufferObject, m_indexBufferObject, and
+ *        m_vertexArrayObject. After creation, the buffers are provided to the scripts.
  */
 void GlobeWidget::initializePlanetMesh()
 {
+    // Ensure that m_shaderProgram has been initialized prior to continuing
+    Q_ASSERT(m_shaderProgram.isCreated());
+
     // Create the VBO
     m_vertexBufferObject.create();
     m_vertexBufferObject.setUsagePattern(QOpenGLBuffer::StaticDraw);
@@ -255,7 +247,7 @@ void GlobeWidget::initializePlanetMesh()
     // NOTE: the following will assert if this function is called before the shaderProgram is initialized
     // Assign position 0 to be the vertices of the globe
     auto stride = (3 * sizeof(float));
-    m_shaderProgram.setAttribute(0, GL_FLOAT, 0, 3, stride, "Vertices");
+    m_shaderProgram.setAttribute(0, GL_FLOAT, 0, 3, stride);
 
     // Record the number of indices used in the operation above. Needed for glDrawElements()
     m_numberOfIndices = indices.size();
@@ -266,17 +258,17 @@ void GlobeWidget::initializePlanetMesh()
 }
 
 /**
-  * \brief
+  * \brief Utility function to handle creation of m_camera.
   */
 void GlobeWidget::initializeCamera()
 {
-    m_camera.setFieldOfView(20.0f);
-    m_camera.setDistanceToNearPlane(0.1f);
-    m_camera.setDistanceToFarPlane(10.0f);
+    m_camera.setFieldOfView(DEFAULT_FIELD_OF_VIEW);
+    m_camera.setDistanceToNearPlane(DEFAULT_NEAR_PLANE_DISTANCE);
+    m_camera.setDistanceToFarPlane(DEFAULT_FAR_PLANE_DISTANCE);
 }
 
 /**
- * \brief
+ * \brief Utility function to handle creation of m_texture as a cubemap.
  */
 void GlobeWidget::initializeCubeMap()
 {
@@ -303,41 +295,76 @@ void GlobeWidget::initializeCubeMap()
     m_texture.setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     m_texture.setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
 
-    m_shaderProgram.setUniformValue("CubeMap", 0);
+    m_shaderProgram.setUniformValue(CUBEMAP_NAME_IN_SHADERS, 0);
 }
 
 /**
- * \brief
+ * \brief Utility function to sanitize changes to m_cameraAzimuth.
  */
 void GlobeWidget::updateAzimuth(const float difference)
 {
     // Input sanitization
-    Q_ASSERT(difference <= 360.0f && difference >= -360.0f);
+    Q_ASSERT(difference <= AZIMUTH_UPPER_LIMIT && difference >= AZIMUTH_LOWER_LIMIT);
 
     // Wrap the azimuth once it's gone over
     m_cameraAzimuth += difference;
-    if(m_cameraAzimuth > 360.0f || m_cameraAzimuth < -360.0f)
+    if(m_cameraAzimuth > AZIMUTH_UPPER_LIMIT || m_cameraAzimuth < AZIMUTH_LOWER_LIMIT)
     {
-        m_cameraAzimuth = 0.0f;
+        m_cameraAzimuth = AZIMUTH_ORIGIN;
     }
 }
 
 /**
- * \brief
+ * \brief Utility function to sanitize changes to m_cameraElevation
  */
-void GlobeWidget::updateElevation(float difference)
+void GlobeWidget::updateElevation(const float difference)
 {
     // Input sanitization
-    Q_ASSERT(difference <= 80.0f && difference >= -80.0f);
+    Q_ASSERT(difference <= ELEVATION_UPPER_LIMIT &&
+             difference >= ELEVATION_LOWER_LIMIT);
 
     // Bail out if you're too close to the poles
     m_cameraElevation += difference;
-    if(m_cameraElevation >= 80.0f)
+    if(m_cameraElevation > ELEVATION_UPPER_LIMIT)
     {
-        m_cameraElevation = 80.0f;
+        m_cameraElevation = ELEVATION_UPPER_LIMIT;
     }
-    else if(m_cameraElevation < -80.0f)
+    else if(m_cameraElevation < ELEVATION_LOWER_LIMIT)
     {
-        m_cameraElevation = -80.0f;
+        m_cameraElevation = ELEVATION_LOWER_LIMIT;
     }
+}
+
+/**
+ * \brief Utility function to santize changes to m_cameraRadius
+ */
+void GlobeWidget::updateRadius(const float difference)
+{
+    Q_ASSERT(difference <= 1.0f && difference >= -1.0f);
+
+    m_cameraRadius += difference;
+    if(m_cameraRadius > RADIUS_UPPER_LIMIT)
+    {
+        m_cameraRadius = RADIUS_UPPER_LIMIT;
+    }
+    else if(m_cameraRadius < RADIUS_LOWER_LIMIT)
+    {
+        m_cameraRadius = RADIUS_LOWER_LIMIT;
+    }
+}
+
+/**
+ * \brief Utility function that performs a conversion from sphereical coordinates
+ *        to cartesian, right hand XYZ
+ */
+void GlobeWidget::updateCameraPosition()
+{
+    QVector3D newCameraPosition;
+    newCameraPosition.setY(m_cameraRadius * qSin(qDegreesToRadians(m_cameraElevation)));
+    auto hypotenuse = m_cameraRadius * qCos(qDegreesToRadians(m_cameraElevation));
+
+    newCameraPosition.setX(hypotenuse * qSin(qDegreesToRadians(m_cameraAzimuth)));
+    newCameraPosition.setZ(hypotenuse * qCos(qDegreesToRadians(m_cameraAzimuth)));
+
+    m_camera.setPosition(newCameraPosition);
 }

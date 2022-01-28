@@ -2,25 +2,30 @@
 
 namespace
 {
-    QVector3D ORIGIN{ 0.0f, 0.0f, 0.0f };
-    QVector3D Y_AXIS{ 0.0f, 1.0f, 0.0f };
+    QVector3D ORIGIN { 0.0f, 0.0f, 0.0f };
+    QVector3D Y_AXIS { 0.0f, 1.0f, 0.0f };
+
+    constexpr auto FIELD_OF_VIEW_LOWER_LIMIT = 0.0f;
+    constexpr auto FIELD_OF_VIEW_UPPER_LIMIT = 180.0f;
+
+    constexpr auto DEFAULT_NEAR_PLANE_DISTANCE = 0.0f;
+    constexpr auto DEFAULT_FAR_PLANE_DISTANCE = 0.0f;
 }
 
 /**
- * \brief
+ * \brief Constructor for the Camera class. Input is the cartesian position
  */
-Camera::Camera() :
-    m_position{0.0f, 0.0f, 7.5f},
-    m_rotation{},
-    m_fov{0.0f},
-    m_distanceToNearPlane{0.0f},
-    m_distanceToFarPlane{0.0f}
+Camera::Camera(const float x, const float y, const float z) :
+    m_position(x, y, z),
+    m_fov{FIELD_OF_VIEW_LOWER_LIMIT},
+    m_distanceToNearPlane{DEFAULT_NEAR_PLANE_DISTANCE},
+    m_distanceToFarPlane{DEFAULT_FAR_PLANE_DISTANCE}
 {
 
 }
 
 /**
- * \brief
+ * \brief Calculates the view matrix using the current position
  */
 QMatrix4x4 Camera::viewMatrixAtPosition() const
 {
@@ -28,7 +33,7 @@ QMatrix4x4 Camera::viewMatrixAtPosition() const
 }
 
 /**
- * \brief
+ * \brief Calculates the view matrix using the origin as the current position
  */
 QMatrix4x4 Camera::viewMatrixAtOrigin() const
 {
@@ -36,7 +41,8 @@ QMatrix4x4 Camera::viewMatrixAtOrigin() const
 }
 
 /**
- * \brief
+ * \brief Creates the projection matrix. This is implemented as a perspective matrix.
+ *        In the future, this could change to an orthogonal matrix.
  */
 QMatrix4x4 Camera::projectionMatrix(const float aspectRatio) const
 {
@@ -47,15 +53,7 @@ QMatrix4x4 Camera::projectionMatrix(const float aspectRatio) const
 }
 
 /**
- * \brief
- */
-void Camera::setPosition(const QVector3D position)
-{
-    m_position = position;
-}
-
-/**
- * \brief
+ * \brief Accessor for the camera position
  */
 QVector3D Camera::position() const
 {
@@ -63,7 +61,15 @@ QVector3D Camera::position() const
 }
 
 /**
- * \brief
+ * \brief Mutator for the camera position
+ */
+void Camera::setPosition(const QVector3D& position)
+{
+    m_position = position;
+}
+
+/**
+ * \brief Accessor for the field of view
  */
 float Camera::fieldOfView() const
 {
@@ -71,18 +77,18 @@ float Camera::fieldOfView() const
 }
 
 /**
- * \brief
+ * \brief Mutator for the field of view
  */
-void Camera::setFieldOfView(float fieldOfView)
+void Camera::setFieldOfView(const float fieldOfView)
 {
-    if((fieldOfView >= 0.0f) && (fieldOfView <= 180.0f))
+    if((fieldOfView >= FIELD_OF_VIEW_LOWER_LIMIT) && (fieldOfView <= FIELD_OF_VIEW_UPPER_LIMIT))
     {
         m_fov = fieldOfView;
     }
 }
 
 /**
- * \brief
+ * \brief Accessor for the near plane distance
  */
 float Camera::distanceToNearPlane() const
 {
@@ -90,9 +96,9 @@ float Camera::distanceToNearPlane() const
 }
 
 /**
- * \brief
+ * \brief Mutator for the near plane distance
  */
-void Camera::setDistanceToNearPlane(float distance)
+void Camera::setDistanceToNearPlane(const float distance)
 {
     if(distance <= m_distanceToFarPlane)
     {
@@ -101,7 +107,7 @@ void Camera::setDistanceToNearPlane(float distance)
 }
 
 /**
- * \brief
+ * \brief Accessor for the far plane distance
  */
 float Camera::distanceToFarPlane() const
 {
@@ -109,9 +115,9 @@ float Camera::distanceToFarPlane() const
 }
 
 /**
- * \brief
+ * \brief Mutator for the far plane distance
  */
-void Camera::setDistanceToFarPlane(float distance)
+void Camera::setDistanceToFarPlane(const float distance)
 {
     if(distance >= m_distanceToNearPlane)
     {
@@ -120,7 +126,7 @@ void Camera::setDistanceToFarPlane(float distance)
 }
 
 /**
- * \brief
+ * \brief Utility function to calculate the view matrix at the provided position
  */
 QMatrix4x4 Camera::viewMatrixAt(const QVector3D& position) const
 {

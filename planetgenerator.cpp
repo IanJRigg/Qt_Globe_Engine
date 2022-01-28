@@ -15,7 +15,7 @@ namespace
 }
 
 /**
- * \brief
+ * \brief Generation function for the front face
  */
 static void generate_front_face(std::vector<float>& vertices,
                                 std::vector<uint32_t>& indices,
@@ -65,7 +65,7 @@ static void generate_front_face(std::vector<float>& vertices,
 }
 
 /**
- * \brief
+ * \brief Generation function for the back face
  */
 static void generate_back_face(std::vector<float>& vertices,
                                std::vector<uint32_t>& indices,
@@ -115,7 +115,7 @@ static void generate_back_face(std::vector<float>& vertices,
 }
 
 /**
- * \brief
+ * \brief Generation function for the left face
  */
 static void generate_left_face(std::vector<float>& vertices,
                                std::vector<uint32_t>& indices,
@@ -165,7 +165,7 @@ static void generate_left_face(std::vector<float>& vertices,
 }
 
 /**
- * \brief
+ * \brief Generation function for the right face
  */
 static void generate_right_face(std::vector<float>& vertices,
                                 std::vector<uint32_t>& indices,
@@ -215,7 +215,7 @@ static void generate_right_face(std::vector<float>& vertices,
 }
 
 /**
- * \brief
+ * \brief Generation function for the top face
  */
 static void generate_top_face(std::vector<float>& vertices,
                               std::vector<uint32_t>& indices,
@@ -265,7 +265,7 @@ static void generate_top_face(std::vector<float>& vertices,
 }
 
 /**
- * \brief
+ * \brief Generation function for the bottom face
  */
 static void generate_bottom_face(std::vector<float>& vertices,
                                  std::vector<uint32_t>& indices,
@@ -315,7 +315,9 @@ static void generate_bottom_face(std::vector<float>& vertices,
 }
 
 /**
- * \brief
+ * \brief Public facing function of the planet generator. This is a multithread vertex calculator that populates
+ *        the vertex and index intermediate buffers and returns them for use by the application. Each function
+ *        deposits its values in a specific section of each of the vectors so no thread safety mechanism is reaquired.
  */
 std::pair<std::vector<float>, std::vector<uint32_t>>
 generateSubdividedCube(const uint32_t numberOfSubdivisions)
